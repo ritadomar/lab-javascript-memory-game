@@ -53,6 +53,8 @@ window.addEventListener('load', event => {
     card.addEventListener('click', () => {
       // TODO: write some code here
       console.log(`Card clicked: ${card}`);
+
+      // cards only get added if the array is shorter than 2
       if (memoryGame.pickedCards.length < 2) {
         // adds class "turned" to the card, if it doesn't have it, removes it if it does have it
         // HTMLElement.classList.toggle('className')
@@ -60,58 +62,72 @@ window.addEventListener('load', event => {
 
         // pushing the name of the cards for comparison
         memoryGame.pickedCards.push(card.getAttribute('data-card-name'));
+      }
+      // creating variables for picked cards & paircheck function for easy access
+      const card1 = memoryGame.pickedCards[0];
+      const card2 = memoryGame.pickedCards[1];
+      const checkFunction = memoryGame.checkIfPair(card1, card2);
 
-        // creating variables for picked cards & paircheck function
-        const card1 = memoryGame.pickedCards[0];
-        const card2 = memoryGame.pickedCards[1];
-        const checkFunction = memoryGame.checkIfPair(card1, card2);
+      // creating a variable to access all cards with class="turned"
+      const turnedCards = document.querySelectorAll('.turned');
 
-        // creating a variable to access all cards with class="turned"
-        const turnedCards = document.querySelectorAll('.turned');
+      // conditionals for the click event
+      // if cards are the same & the array is full
+      if (checkFunction && memoryGame.pickedCards.length === 2) {
+        // all turned cards become blocked cards
+        turnedCards.forEach(card => {
+          card.classList.add('blocked');
+          card.classList.remove('turned');
+        });
 
-        // conditionals for the click event
-        // if cards are the same & the array is full
-        if (checkFunction && memoryGame.pickedCards.length === 2) {
-          // all turned cards become blocked cards
-          turnedCards.forEach(card => {
-            card.classList.add('blocked');
-            card.classList.remove('turned');
-          });
+        // empties picked cards array
+        memoryGame.pickedCards = [];
 
-          // empties picked cards array
-          memoryGame.pickedCards = [];
+        // updates score
+        memoryGame.updateScore();
 
-          // everytime a pair is found, checks if the game is over
-          if (memoryGame.checkIfFinished()) {
-            setTimeout(() => {
-              // window.alert('You won!');
-              const winnerScreen = document.getElementById('winner');
-              const message = document.createElement('div');
-              message.setAttribute('id', 'message');
-              winnerScreen.appendChild(message);
-              const title = document.createElement('h2');
-              title.innerHTML = 'You Won!';
-              message.appendChild(title);
-              const finalScores = [...document.querySelectorAll('#score p')];
-
-              finalScores.forEach(paragraph => {
-                message.appendChild(paragraph);
-              });
-
-              winnerScreen.style.display = 'block';
-            }, 500);
-          }
-          // when it's not a pair. important to have length because check if pair always returns false if length < 2
-        } else if (!checkFunction && memoryGame.pickedCards.length === 2) {
-          // after 1 second, cards turn back
+        // everytime a pair is found, checks if the game is over
+        if (memoryGame.checkIfFinished()) {
+          // after 500ms, we win
           setTimeout(() => {
-            turnedCards.forEach(card => {
-              card.classList.toggle('turned');
+            // window.alert('You won!');
+            const winnerScreen = document.getElementById('winner');
+            const message = document.createElement('div');
+            message.setAttribute('id', 'message');
+            winnerScreen.appendChild(message);
+            const title = document.createElement('h2');
+            title.innerHTML = 'You Won!';
+            message.appendChild(title);
+            const restartButton = document.createElement('button');
+            restartButton.setAttribute('class', 'restart');
+            restartButton.innerHTML = 'Restart Game';
+            restartButton.addEventListener('click', () => {
+              location.reload();
             });
-          }, 1000);
-          // cleans array
-          memoryGame.pickedCards = [];
+            const finalScores = [...document.querySelectorAll('#score p')];
+
+            finalScores.forEach(paragraph => {
+              message.appendChild(paragraph);
+            });
+
+            message.appendChild(restartButton);
+
+            winnerScreen.style.display = 'block';
+          }, 500);
         }
+        // when it's not a pair. important to have length because check if pair always returns false if length < 2
+      } else if (!checkFunction && memoryGame.pickedCards.length === 2) {
+        // after 1 second, cards turn back
+        setTimeout(() => {
+          turnedCards.forEach(card => {
+            card.classList.toggle('turned');
+          });
+        }, 1000);
+        // cleans array
+        memoryGame.pickedCards = [];
+
+        // updates score
+        memoryGame.updateScore();
       }
     });
   });

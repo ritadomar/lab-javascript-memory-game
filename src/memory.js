@@ -38,13 +38,14 @@ class MemoryGame {
   // added the update score method to the checkIfPair method
   checkIfPair(card1, card2) {
     // ... write your code here
-    this.pairsClicked++;
     if (card1 === card2) {
+      this.pairsClicked++;
       this.pairsGuessed++;
-      this.updateScore();
+      // this.updateScore();
       return true;
-    } else {
-      this.updateScore();
+    } else if (card1 !== card2 && card2 !== undefined) {
+      this.pairsClicked++;
+      // this.updateScore();
       return false;
     }
   }
