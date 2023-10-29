@@ -84,7 +84,21 @@ window.addEventListener('load', event => {
           // everytime a pair is found, checks if the game is over
           if (memoryGame.checkIfFinished()) {
             setTimeout(() => {
-              window.alert('You won!');
+              // window.alert('You won!');
+              const winnerScreen = document.getElementById('winner');
+              const message = document.createElement('div');
+              message.setAttribute('id', 'message');
+              winnerScreen.appendChild(message);
+              const title = document.createElement('h2');
+              title.innerHTML = 'You Won!';
+              message.appendChild(title);
+              const finalScores = [...document.querySelectorAll('#score p')];
+
+              finalScores.forEach(paragraph => {
+                message.appendChild(paragraph);
+              });
+
+              winnerScreen.style.display = 'block';
             }, 500);
           }
           // when it's not a pair. important to have length because check if pair always returns false if length < 2
